@@ -10,6 +10,7 @@ import { ProductsModule } from './products/products.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { Product } from './products/entities/product.entity';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -44,6 +45,10 @@ import { Product } from './products/entities/product.entity';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile:true,
+    }),
+    CacheModule.register({
+      ttl: 5,
+      max: 10
     }),
     UsersModule,
     ProductsModule,

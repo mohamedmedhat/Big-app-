@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { CacheKey, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('products')
 export class ProductsController {
@@ -12,6 +13,8 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
+  @CacheKey('custom_key')
+  @CacheTTL(20)
   @Get()
   findAll() {
     return this.productsService.findAll();
