@@ -17,7 +17,7 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
   app.use(helmet());
-  app.use(compression());
+  // app.use(compression());
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
 

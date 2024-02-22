@@ -7,10 +7,23 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { ProductsModule } from './products/products.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './users/entities/user.entity';
+import { Product } from './products/entities/product.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: process.env.TYPEORM_USERNAME,
+      password: process.env.TYPEORM_PASS,
+      database: process.env.TYPEORM_DB,
+      entities:[User,Product],
+      synchronize:true,
+    }),
     ThrottlerModule.forRoot([
       {
         name: 'short',
