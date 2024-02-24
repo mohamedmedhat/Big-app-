@@ -1,17 +1,23 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
-import { ProductsModule } from './products/products.module';
+import { SwaggerModule } from './swagger/swagger.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { Product } from './products/entities/product.entity';
 import { CacheModule } from '@nestjs/cache-manager';
-import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { OrdersModule } from './orders/orders.module';
+import { ChatsModule } from './chats/chats.module';
+import { Chat } from './chats/entities/chat.entity';
+import { Order } from './orders/entities/order.entity';
+import { ProductsModule } from './products/products.module';
+import { AuthMiddleware } from './users/auth.middleware';
 
 @Module({
   imports: [
@@ -23,7 +29,7 @@ import { AuthModule } from './auth/auth.module';
       username: process.env.TYPEORM_USERNAME,
       password: process.env.TYPEORM_PASS,
       database: process.env.TYPEORM_DB,
-      entities:[User,Product],
+      entities:[User,Product,Chat,Order],
       synchronize:true,
     }),
     ThrottlerModule.forRoot([
@@ -52,10 +58,20 @@ import { AuthModule } from './auth/auth.module';
       max: 10
     }),
     UsersModule,
+    SwaggerModule,
+    JwtModule,
+    PassportModule.register({defaultStrategy:'jwt'}),
+    OrdersModule,
+    ChatsModule,
     ProductsModule,
-    AuthModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes(
+      {path: 'admin',method:RequestMethod.ALL},
+    );
+  }
+}

@@ -1,30 +1,33 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { IsEmail, IsNotEmpty, IsStrongPassword } from "class-validator";
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { Order } from "../../orders/entities/order.entity";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 @ObjectType()
 export class User {
-  @Field()
+  @Field(()=>ID)
   @PrimaryGeneratedColumn()
   id: number;
 
-  @IsNotEmpty()
   @Field()
   @Column()
   name: string;
 
-  @IsNotEmpty()
-  @IsEmail()
   @Field()
   @Column()
   email: string;
 
-  @IsNotEmpty()
-  @IsStrongPassword()
   @Field()
   @Column()
   password: string;
+
+  @Field()
+  @Column({default:false})
+  isAdmin: boolean
+
+  @Field()
+  @OneToMany(()=>Order, order => order.user)
+  orders: Order[]
 
   @Field()
   @CreateDateColumn({name: 'created_at'})

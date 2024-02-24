@@ -1,16 +1,21 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
+import { Order } from 'src/orders/entities/order.entity';
+import { Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@ObjectType()
 export class Product {
-    @PrimaryGeneratedColumn()
-    id: number
+  @Field(() => ID)
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    name: string
+  @Field()
+  @Column()
+  name:string;
 
-    @Column()
-    price: number
+  @Field()
+  @Column()
+  price: number
 
-    @CreateDateColumn({type: 'timestamp'})
-    createdAt: Date
+  @OneToMany(()=>Order, order => order.product)
+  orders: Order[];
 }
