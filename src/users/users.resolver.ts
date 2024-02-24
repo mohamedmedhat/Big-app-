@@ -9,6 +9,16 @@ import { ApiBody } from '@nestjs/swagger';
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
+  @Mutation(()=> User)
+  async SignIn(@Args('email') email:string,@Args('password') password:string){
+    return this.usersService.SignIn(email,password);
+  }
+
+  @Mutation()
+  async SignUp(@Args('createUser') createuserInput:CreateUserInput):Promise<User>{
+    return this.usersService.SignUp(createuserInput);
+  }
+
   @Mutation(() => User,{name: 'createUser'})
   async createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
     return this.usersService.create(createUserInput);
