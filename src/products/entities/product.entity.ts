@@ -10,6 +10,10 @@ export class Product {
 
   @Field()
   @Column()
+  image:string;
+
+  @Field()
+  @Column()
   name:string;
 
   @Field()

@@ -18,6 +18,7 @@ import { Chat } from './chats/entities/chat.entity';
 import { Order } from './orders/entities/order.entity';
 import { ProductsModule } from './products/products.module';
 import { AuthMiddleware } from './users/auth.middleware';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -56,6 +57,11 @@ import { AuthMiddleware } from './users/auth.middleware';
     CacheModule.register({
       ttl: 5,
       max: 10
+    }),
+    MulterModule.registerAsync({
+      useFactory: ()=>({
+        dest: './upload',
+      }),
     }),
     UsersModule,
     SwaggerModule,
