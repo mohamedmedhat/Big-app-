@@ -19,6 +19,7 @@ import { Order } from './orders/entities/order.entity';
 import { ProductsModule } from './products/products.module';
 import { AuthMiddleware } from './users/auth.middleware';
 import { MulterModule } from '@nestjs/platform-express';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -62,6 +63,12 @@ import { MulterModule } from '@nestjs/platform-express';
       useFactory: ()=>({
         dest: './upload',
       }),
+    }),
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      }
     }),
     UsersModule,
     SwaggerModule,

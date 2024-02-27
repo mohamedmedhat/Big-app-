@@ -12,6 +12,10 @@ async function bootstrap() {
   app.enableVersioning({
     type: VersioningType.URI,
   });
+  app.enableCors({
+    origin: process.env.CLIENT_PORT,
+    credentials: true,
+  })
   app.use(helmet());
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
