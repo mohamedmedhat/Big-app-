@@ -30,8 +30,8 @@ export class SwaggerService {
 
   async update(id: number, updateProductDto: UpdateSwaggerDto) {
     const product = await this.findOne(id);
-    Object.assign(product, updateProductDto);
-    return this.productRepository.save(product);
+    const updatedProduct = Object.assign(product, updateProductDto);
+    return this.productRepository.save(updatedProduct);
   }
 
   remove(id: number) {

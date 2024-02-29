@@ -4,7 +4,6 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
@@ -27,18 +26,22 @@ export class UsersService {
     }
   }
 
-  async SignIn(email: string, password: string): Promise<string> {
-    const isEmailExist = await this.isEmailExist(email);
-    const isPasswordValid = bcrypt.compareSync(isEmailExist.password, password);
-    if (!isEmailExist || !isPasswordValid) {
-      throw new UnauthorizedException('Wrong Credential');
-    }
+  async generateAuthToken(user: User): Promise<string> {
     const payload = {
-      id: isEmailExist.id,
-      email: isEmailExist.email,
-      isAdmin: isEmailExist.isAdmin,
+      id: user.id,
+      email: user.email,
+      isAdmin: user.isAdmin,
     };
-    return jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
+    return this.jwtService.sign(payload, { expiresIn: '1d' });
+  }
+
+  async SignIn(email: string, password: string): Promise<string> {
+    const user = await this.isEmailExist(email);
+    const isPasswordValid = bcrypt.compareSync(user.password, password);
+    if (!user || !isPasswordValid) {
+      throw new UnauthorizedException('Invalid Credential');
+    }
+    return this.generateAuthToken(user);
   }
 
   async SignUp(createUserInput: CreateUserInput): Promise<User> {
@@ -70,9 +73,11 @@ export class UsersService {
 
   async update(id: number, updateUserInput: UpdateUserInput): Promise<User> {
     const user = await this.userRpository.findOneBy({ id });
-    if (user) {
-      return this.userRpository.save({ ...user, ...updateUserInput });
+    if (!user) {
+      return undefined;
     }
+    const updatedUser = Object.assign(user, updateUserInput);
+    return this.userRpository.save(updatedUser);
   }
 
   async remove(id: number) {

@@ -20,6 +20,7 @@ import { ProductsModule } from './products/products.module';
 import { AuthMiddleware } from './users/auth.middleware';
 import { MulterModule } from '@nestjs/platform-express';
 import { BullModule } from '@nestjs/bull';
+import { GoogleModule } from './google/google.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { BullModule } from '@nestjs/bull';
     OrdersModule,
     ChatsModule,
     ProductsModule,
+    GoogleModule
   ],
   controllers: [],
   providers: [AppService],

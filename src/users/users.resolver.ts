@@ -3,7 +3,6 @@ import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { ApiBody } from '@nestjs/swagger';
 import { ROLES } from 'src/decorators/userRoles.decorator';
 import { UserRoles } from 'src/enums/userRole.enum';
 
