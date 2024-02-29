@@ -8,7 +8,7 @@ export class WebScrabingService {
 
   async getProducts(products: string) {
     const browser = await puppeteer.connect({
-      browserWSEndpoint: this.configService.getOrThrow(''),
+      browserWSEndpoint: this.configService.getOrThrow('PROXY_SCRAP_KEY'),
     });
     try {
       const page = await browser.newPage();
