@@ -1,11 +1,16 @@
-import { Schema, Prop } from '@nest/mongoose'
 import { User } from 'src/users/entities/user.entity';
-@Schema()
+import { Column, Entity, ManyToOne } from 'typeorm';
+
+@Entity()
 export class Chat {
 
-    @Prop({required: true, ref: User})
+    @Column()
     sender: number;
 
-    @Prop()
+    @Column()
     content: string;
+
+    @ManyToOne(() => User, user => user.chats)
+    user:User
 }
+
