@@ -21,6 +21,7 @@ import { AuthMiddleware } from './users/auth.middleware';
 import { MulterModule } from '@nestjs/platform-express';
 import { BullModule } from '@nestjs/bull';
 import { GoogleModule } from './google/google.module';
+import { WebScrabingModule } from './web-scrabing/web-scrabing.module';
 
 @Module({
   imports: [
@@ -78,7 +79,8 @@ import { GoogleModule } from './google/google.module';
     OrdersModule,
     ChatsModule,
     ProductsModule,
-    GoogleModule
+    GoogleModule,
+    WebScrabingModule
   ],
   controllers: [],
   providers: [AppService],
