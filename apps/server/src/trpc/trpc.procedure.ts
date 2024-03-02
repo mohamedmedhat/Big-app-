@@ -6,7 +6,7 @@ export const TRPCProcedures = {
   getAll: {
     input: z.object({}),
     resolver: async ({ ctx }) => {
-      const trpcService = ctx.req.trpcService;
+      const trpcService: TrpcService = ctx.req.trpcService;
       return await trpcService.getAll();
     },
   },
@@ -15,7 +15,7 @@ export const TRPCProcedures = {
       id: z.number(),
     }),
     resolver: async ({ input, ctx }) => {
-      const trpcService = ctx.req.trpcService;
+      const trpcService: TrpcService = ctx.req.trpcService;
       const { id } = input;
       return await trpcService.getById(id);
     },
@@ -27,7 +27,7 @@ export const TRPCProcedures = {
      email: z.string().optional(),
     }),
     resolver: async ({ input, ctx }) => {
-      const trpcService = ctx.req.trpcService;
+      const trpcService: TrpcService = ctx.req.trpcService;
       const { createTrpc } = input;
       return await trpcService.createOne(createTrpc);
     },

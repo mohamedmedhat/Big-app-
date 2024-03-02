@@ -84,7 +84,7 @@ import { TRPCMiddleware } from './middlewares/trpc.middleware';
     ProductsModule,
     GoogleModule,
     WebScrabingModule,
-    TrpcModule
+    TrpcModule,
   ],
   controllers: [],
   providers: [AppService],
