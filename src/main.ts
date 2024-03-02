@@ -4,10 +4,13 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { TrpcRouter } from './trpc/trpc.router';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const trpc = app.get(TrpcRouter); // opt 1
 
+  
   /**  middlewares  */
   app.enableVersioning({
     type: VersioningType.URI,
@@ -19,6 +22,7 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
+  trpc.applyMiddleware(app); // opt 1 
 
   const config = new DocumentBuilder()
   .setTitle('Big App')
@@ -30,6 +34,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app,config);
   SwaggerModule.setup('api',app,document);
 
-  await app.listen(3000);
+  await app.listen(process.env.NEST_PORT || 4000);
 }
 bootstrap();

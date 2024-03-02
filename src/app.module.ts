@@ -22,6 +22,9 @@ import { MulterModule } from '@nestjs/platform-express';
 import { BullModule } from '@nestjs/bull';
 import { GoogleModule } from './google/google.module';
 import { WebScrabingModule } from './web-scrabing/web-scrabing.module';
+import { TrpcModule } from './trpc/trpc.module';
+import { TRPC } from './trpc/entities/trpc.entity';
+import { TRPCMiddleware } from './trpc/trpc.middleware';
 
 @Module({
   imports: [
@@ -33,7 +36,7 @@ import { WebScrabingModule } from './web-scrabing/web-scrabing.module';
       username: process.env.TYPEORM_USERNAME,
       password: process.env.TYPEORM_PASS,
       database: process.env.TYPEORM_DB,
-      entities:[User,Product,Chat,Order],
+      entities:[User,Product,Chat,Order,TRPC],
       synchronize:true,
     }),
     ThrottlerModule.forRoot([
@@ -80,7 +83,8 @@ import { WebScrabingModule } from './web-scrabing/web-scrabing.module';
     ChatsModule,
     ProductsModule,
     GoogleModule,
-    WebScrabingModule
+    WebScrabingModule,
+    TrpcModule
   ],
   controllers: [],
   providers: [AppService],
@@ -90,5 +94,7 @@ export class AppModule implements NestModule {
     consumer.apply(AuthMiddleware).forRoutes(
       {path: 'admin',method:RequestMethod.ALL},
     );
+    consumer.apply(TRPCMiddleware) // opt 2
+    .forRoutes({path: 'api/trpc*' , method: RequestMethod.ALL});
   }
 }
