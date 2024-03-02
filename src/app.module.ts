@@ -24,7 +24,7 @@ import { GoogleModule } from './google/google.module';
 import { WebScrabingModule } from './web-scrabing/web-scrabing.module';
 import { TrpcModule } from './trpc/trpc.module';
 import { TRPC } from './trpc/entities/trpc.entity';
-import { TRPCMiddleware } from './trpc/trpc.middleware';
+import { TRPCMiddleware } from './middlewares/trpc.middleware';
 
 @Module({
   imports: [

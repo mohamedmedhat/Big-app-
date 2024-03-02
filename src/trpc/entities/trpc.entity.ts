@@ -10,4 +10,10 @@ export class TRPC {
 
   @Column()
   email: string;
+
+  @Column()
+  page: number;
+
+  @Column()
+  pageSize: number;
 }

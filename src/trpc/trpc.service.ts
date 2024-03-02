@@ -33,4 +33,12 @@ export class TrpcService {
     });
     return await this.trpcRepo.save(newTrpc);
   }
+
+  async getByPagination(page: number, pageSize: number): Promise<TRPC[]>{
+    const skip = (page - 1)* pageSize;
+    return await this.trpcRepo.find({
+      skip,
+      take: pageSize,
+    });
+  }
 }

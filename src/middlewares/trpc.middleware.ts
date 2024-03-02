@@ -1,7 +1,7 @@
 // trpc.middleware.ts
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { TrpcService } from './trpc.service';
+import { TrpcService } from '../trpc/trpc.service';
 
 @Injectable()
 export class TRPCMiddleware implements NestMiddleware {
