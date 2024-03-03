@@ -26,6 +26,7 @@ import { TrpcModule } from './trpc/trpc.module';
 import { TRPC } from './trpc/entities/trpc.entity';
 import { TRPCMiddleware } from './middlewares/trpc.middleware';
 import { GoogleRecaptchaModule, GoogleRecaptchaNetwork } from '@nestlab/google-recaptcha';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { GoogleRecaptchaModule, GoogleRecaptchaNetwork } from '@nestlab/google-r
       entities:[User,Product,Chat,Order,TRPC],
       synchronize:true,
     }),
+    ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([
       {
         name: 'short',

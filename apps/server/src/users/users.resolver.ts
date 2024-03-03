@@ -7,6 +7,7 @@ import { ROLES } from '../decorators/userRoles.decorator';
 import { UserRoles } from '../enums/userRole.enum';
 import { Recaptcha } from '@nestlab/google-recaptcha';
 import { CAPTCHA } from './entities/captcha.entity';
+import { ClassSerializerInterceptor, UseInterceptors } from '@nestjs/common';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -63,12 +64,14 @@ export class UsersResolver {
     return this.usersService.update(updateUserInput.id, updateUserInput);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @ROLES(UserRoles.ADMIN)
   @Query(() => [User], { name: 'findAllUsers' })
   async findAll() {
     return this.usersService.findAll();
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @ROLES(UserRoles.ADMIN)
   @Query(() => User, { name: 'findOneUser' })
   async findOne(@Args('id', { type: () => Int }) id: number) {

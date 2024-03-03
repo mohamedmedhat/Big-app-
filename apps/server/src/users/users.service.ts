@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { Repository } from 'typeorm';
@@ -8,14 +8,21 @@ import * as bcrypt from 'bcrypt';
 import * as svgCaptcha from 'svg-captcha';
 import { JwtService } from '@nestjs/jwt';
 import { CAPTCHA } from './entities/captcha.entity';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRpository: Repository<User>,
     @InjectRepository(CAPTCHA) private readonly userCaptchaa: Repository<CAPTCHA>,
+    private readonly _logger = new Logger(UsersService.name),
     private jwtService: JwtService,
   ) {}
+
+  @Cron('45 * * * * *')
+  async handleCron(){
+     this._logger.debug('This happen on the 45th second')
+  }
 
   async isEmailExist(email: string): Promise<User> {
     return this.userRpository.findOneBy({ email });
