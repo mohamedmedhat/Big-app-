@@ -6,6 +6,7 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { ROLES } from '../decorators/userRoles.decorator';
 import { UserRoles } from '../enums/userRole.enum';
 import { Recaptcha } from '@nestlab/google-recaptcha';
+import { CAPTCHA } from './entities/captcha.entity';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -17,13 +18,29 @@ export class UsersResolver {
   async SignIn(
     @Args('email') email: string,
     @Args('password') password: string,
-    @Args('recaptchaResponse') recaptchaResponse: string
+    @Args('recaptchaResponse') recaptchaResponse: string,
   ) {
     if (!recaptchaResponse) {
       throw new Error('reCAPTCHA validation failed');
     }
-    
     return this.usersService.SignIn(email, password);
+  }
+
+  @ROLES(UserRoles.USER)
+  @Mutation(() => CAPTCHA)
+  async generateCapthcha() {
+    const {text, data} = await this.usersService.generateCaptcha();
+    return {text, data};
+  }
+
+  @ROLES(UserRoles.USER)
+  @Mutation(() => CAPTCHA)
+  async validateCaptcha(@Args('captchaId') captchaId: number, @Args('inputText') inputText: string){
+    const captcha = await this.usersService.getCaptchaByID(captchaId);
+    if(!captcha){
+      throw new Error('Invalid Captcha');
+    }
+    return captcha.text === inputText;
   }
 
   @ROLES(UserRoles.USER || UserRoles.ADMIN)

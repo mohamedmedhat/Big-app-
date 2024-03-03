@@ -5,12 +5,15 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import * as svgCaptcha from 'svg-captcha';
 import { JwtService } from '@nestjs/jwt';
+import { CAPTCHA } from './entities/captcha.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRpository: Repository<User>,
+    @InjectRepository(CAPTCHA) private readonly userCaptchaa: Repository<CAPTCHA>,
     private jwtService: JwtService,
   ) {}
 
@@ -35,6 +38,23 @@ export class UsersService {
     return this.jwtService.sign(payload, { expiresIn: '1d' });
   }
 
+  async generateCaptcha(): Promise<{text: string, data: Buffer}>{
+    const captchaSvg = svgCaptcha.create();
+    const text = captchaSvg.text;
+    const data = Buffer.from(captchaSvg.data); // convert svg data to buffer 
+
+    const captcha = new CAPTCHA();
+    captcha.text = text;
+    captcha.data = data;
+    await this.userCaptchaa.save(captcha);
+
+    return {text, data};
+  }
+
+  async getCaptchaByID(id: number): Promise<CAPTCHA | undefined>{
+    return await this.userCaptchaa.findOneBy({_id: id});
+  }
+  
   async SignIn(email: string, password: string): Promise<string> {
     const user = await this.isEmailExist(email);
     const isPasswordValid = bcrypt.compareSync(password, user.password);
