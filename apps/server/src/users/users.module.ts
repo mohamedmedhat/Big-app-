@@ -4,6 +4,7 @@ import { UsersResolver } from './users.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports:[
@@ -11,7 +12,10 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.register({
       secret: process.env.JWT_SECRET_KEY,
       signOptions: {expiresIn: '1h'},
-    })
+    }),
+    BullModule.registerQueue({
+      name: 'users',
+    }),
   ],
   providers: [UsersResolver, UsersService],
 })

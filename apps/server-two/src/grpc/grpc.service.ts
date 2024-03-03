@@ -4,11 +4,14 @@ import { GRPC } from './entities/grpc.entity';
 import { Repository } from 'typeorm';
 import { CreategRPCDto } from './dto/create.dto';
 import { UpdategRPCDto } from './dto/update.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class GrpcService {
     constructor(
         @InjectRepository(GRPC) private readonly gRPCRepo: Repository<GRPC>,
+        @InjectQueue('gRPC') private readonly _gRPCQueue: Queue,
     ){}
 
     async create(createDto: CreategRPCDto): Promise<GRPC> {

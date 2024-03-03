@@ -4,10 +4,15 @@ import { Swagger } from './entities/product.entity';
 import { Repository } from 'typeorm';
 import { CreateSwaggerDto } from './dto/create-product.dto';
 import { UpdateSwaggerDto } from './dto/update-product.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class SwaggerService {
-  constructor(@InjectRepository(Swagger) private readonly productRepository:Repository<Swagger>){}
+  constructor(
+    @InjectRepository(Swagger) private readonly productRepository:Repository<Swagger>,
+    @InjectQueue('swagger') private readonly _swaggerQueue: Queue,
+    ){}
 
   async create(createProductDto: CreateSwaggerDto):Promise<Swagger> {
    const user = this.productRepository.create({

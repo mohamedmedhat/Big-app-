@@ -3,10 +3,15 @@ import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly productRepository: Repository<Product>){}
+  constructor(
+    @InjectQueue('products') private readonly _productsQueue: Queue,
+    private readonly productRepository: Repository<Product>,
+    ){}
 
   async savePhoto(filename:string, filepath:string):Promise<Product>{
     const photo = new Product();

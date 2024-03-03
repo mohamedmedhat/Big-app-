@@ -9,12 +9,15 @@ import * as svgCaptcha from 'svg-captcha';
 import { JwtService } from '@nestjs/jwt';
 import { CAPTCHA } from './entities/captcha.entity';
 import { Cron } from '@nestjs/schedule';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRpository: Repository<User>,
     @InjectRepository(CAPTCHA) private readonly userCaptchaa: Repository<CAPTCHA>,
+    @InjectQueue('users') private readonly _usersQueue: Queue,
     private readonly _logger = new Logger(UsersService.name),
     private jwtService: JwtService,
   ) {}

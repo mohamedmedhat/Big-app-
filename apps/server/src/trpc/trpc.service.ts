@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { initTRPC } from '@trpc/server';
 import { TRPC } from './entities/trpc.entity';
 import { Repository } from 'typeorm';
-import { CreateChatDto } from 'src/chats/dto/create-chat.dto';
+import { CreateChatDto } from '../chats/dto/create-chat.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class TrpcService {
   constructor(
     @InjectRepository(TRPC) private readonly trpcRepo: Repository<TRPC>,
+    @InjectQueue('tRPC') private readonly tRPCQueue: Queue,
   ) {}
 
   // opt 1
