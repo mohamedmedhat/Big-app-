@@ -37,7 +37,7 @@ export class UsersService {
 
   async SignIn(email: string, password: string): Promise<string> {
     const user = await this.isEmailExist(email);
-    const isPasswordValid = bcrypt.compareSync(user.password, password);
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
     if (!user || !isPasswordValid) {
       throw new UnauthorizedException('Invalid Credential');
     }

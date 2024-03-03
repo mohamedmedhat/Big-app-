@@ -3,52 +3,64 @@ import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { ROLES } from 'src/decorators/userRoles.decorator';
-import { UserRoles } from 'src/enums/userRole.enum';
+import { ROLES } from '../decorators/userRoles.decorator';
+import { UserRoles } from '../enums/userRole.enum';
+import { Recaptcha } from '@nestlab/google-recaptcha';
 
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @ROLES(UserRoles.USER || UserRoles.ADMIN)
-  @Mutation(()=> User)
-  async SignIn(@Args('email') email:string,@Args('password') password:string){
-    return this.usersService.SignIn(email,password);
+  @Mutation(() => User)
+  @Recaptcha()
+  async SignIn(
+    @Args('email') email: string,
+    @Args('password') password: string,
+    @Args('recaptchaResponse') recaptchaResponse: string
+  ) {
+    if (!recaptchaResponse) {
+      throw new Error('reCAPTCHA validation failed');
+    }
+    
+    return this.usersService.SignIn(email, password);
   }
 
   @ROLES(UserRoles.USER || UserRoles.ADMIN)
   @Mutation()
-  async SignUp(@Args('createUser') createuserInput:CreateUserInput):Promise<User>{
+  async SignUp(
+    @Args('createUser') createuserInput: CreateUserInput,
+  ): Promise<User> {
     return this.usersService.SignUp(createuserInput);
   }
 
   @ROLES(UserRoles.ADMIN)
-  @Mutation(() => User,{name: 'createUser'})
+  @Mutation(() => User, { name: 'createUser' })
   async createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
     return this.usersService.create(createUserInput);
   }
 
   @ROLES(UserRoles.ADMIN)
-  @Mutation(() => User, {name: 'updateUser'})
+  @Mutation(() => User, { name: 'updateUser' })
   async updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
     return this.usersService.update(updateUserInput.id, updateUserInput);
   }
 
   @ROLES(UserRoles.ADMIN)
-  @Query(()=> [User],{name:'findAllUsers'})
-  async findAll(){
+  @Query(() => [User], { name: 'findAllUsers' })
+  async findAll() {
     return this.usersService.findAll();
   }
 
   @ROLES(UserRoles.ADMIN)
-  @Query(()=>User,{name: 'findOneUser'})
-  async findOne(@Args('id',{type: ()=> Int}) id:number){
-    return this.usersService.findOne(id)
+  @Query(() => User, { name: 'findOneUser' })
+  async findOne(@Args('id', { type: () => Int }) id: number) {
+    return this.usersService.findOne(id);
   }
 
   @ROLES(UserRoles.ADMIN)
-  @Mutation(()=>User,{name: 'deleteUser'})
-  async remove(@Args('id',{type: ()=> Int}) id:number){
+  @Mutation(() => User, { name: 'deleteUser' })
+  async remove(@Args('id', { type: () => Int }) id: number) {
     return this.usersService.remove(id);
   }
 }

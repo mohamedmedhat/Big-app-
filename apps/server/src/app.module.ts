@@ -25,6 +25,7 @@ import { WebScrabingModule } from './web-scrabing/web-scrabing.module';
 import { TrpcModule } from './trpc/trpc.module';
 import { TRPC } from './trpc/entities/trpc.entity';
 import { TRPCMiddleware } from './middlewares/trpc.middleware';
+import { GoogleRecaptchaModule, GoogleRecaptchaNetwork } from '@nestlab/google-recaptcha';
 
 @Module({
   imports: [
@@ -74,6 +75,11 @@ import { TRPCMiddleware } from './middlewares/trpc.middleware';
         host: 'localhost',
         port: 6379,
       }
+    }),
+    GoogleRecaptchaModule.forRoot({
+      secretKey: process.env.GOOGLE_REPATCHA_SECRET_KEY,
+      response: (req) => req.headers.authorization,
+      network: GoogleRecaptchaNetwork.Recaptcha,
     }),
     UsersModule,
     SwaggerModule,

@@ -39,6 +39,7 @@
     "@nestjs/throttler": "^5.1.2",
     "@nestjs/typeorm": "^10.0.2",
     "@nestjs/websockets": "^10.3.3",
+    "@nestlab/google-recaptcha": "^3.7.0",
     "@trpc/server": "^10.45.1",
     "bcrypt": "^5.1.1",
     "bull": "^4.12.2",
