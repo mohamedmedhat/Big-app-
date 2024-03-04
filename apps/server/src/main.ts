@@ -10,14 +10,16 @@ import * as compression from 'compression';
 import * as fs from 'fs';
 
 const httpsOptions = {
-  key: fs.readFileSync('../../secret/cert.key'),
-  cert: fs.readFileSync('../../secret/cert.crt'),
+  key: fs.readFileSync('../../../secret/cert.key'),
+  cert: fs.readFileSync('../../../secret/cert.crt'),
 };
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule,{
     httpsOptions,
   });
+  app.setGlobalPrefix('v1');
+
   const trpc = app.get(TrpcRouter); // opt 1
 
   
