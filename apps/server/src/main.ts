@@ -7,9 +7,17 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { TrpcRouter } from './trpc/trpc.router';
 import { CompressionMiddleware } from './middlewares/compression.middleware';
 import * as compression from 'compression';
+import * as fs from 'fs';
+
+const httpsOptions = {
+  key: fs.readFileSync('../../secret/cert.key'),
+  cert: fs.readFileSync('../../secret/cert.crt'),
+};
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule,{
+    httpsOptions,
+  });
   const trpc = app.get(TrpcRouter); // opt 1
 
   
