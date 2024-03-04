@@ -26,7 +26,7 @@ export class SwaggerService {
   }
 
   async findOne(id: number): Promise<Swagger> {
-    const product = await this.productRepository.findOneBy({id});
+    const product = await this.productRepository.findOneBy({_id: id});
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }

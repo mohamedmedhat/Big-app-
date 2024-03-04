@@ -1,10 +1,7 @@
 import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { CreateContentDto } from '../../classes/Content.dto';
 
-export class CreateTrpcDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
+export class CreateTrpcDto extends CreateContentDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;

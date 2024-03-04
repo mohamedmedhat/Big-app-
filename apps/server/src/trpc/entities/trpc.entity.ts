@@ -1,13 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Content } from '../../classes/Content.class';
 
 @Entity()
-export class TRPC {
-  @PrimaryGeneratedColumn()
-  _id: number;
-
-  @Column()
-  name: string;
-
+export class TRPC extends Content {
   @Column()
   email: string;
 
