@@ -9,7 +9,7 @@ import { SwaggerModule } from './swagger/swagger.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { Product } from './products/entities/product.entity';
-import { CacheModule } from '@nestjs/cache-manager';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { OrdersModule } from './orders/orders.module';
@@ -27,6 +27,7 @@ import { TRPC } from './trpc/entities/trpc.entity';
 import { TRPCMiddleware } from './middlewares/trpc.middleware';
 import { GoogleRecaptchaModule, GoogleRecaptchaNetwork } from '@nestlab/google-recaptcha';
 import { ScheduleModule } from '@nestjs/schedule';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -65,7 +66,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     CacheModule.register({
       ttl: 5,
-      max: 10
+      max: 10,
+      isGlobal: true,
     }),
     MulterModule.registerAsync({
       useFactory: ()=>({
@@ -95,7 +97,13 @@ import { ScheduleModule } from '@nestjs/schedule';
     TrpcModule,
   ],
   controllers: [],
-  providers: [AppService],
+  providers: [
+    AppService,
+  {
+    provide: APP_INTERCEPTOR,
+    useClass: CacheInterceptor,
+  },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
