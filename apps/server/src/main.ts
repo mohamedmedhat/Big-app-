@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { TrpcRouter } from './trpc/trpc.router';
+import { CompressionMiddleware } from './middlewares/compression.middleware';
+import * as compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +24,8 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
+  app.use(compression()); // if this not work use tne one below
+  // app.use(new CompressionMiddleware().use);
   trpc.applyMiddleware(app); // opt 1 
 
   const config = new DocumentBuilder()
