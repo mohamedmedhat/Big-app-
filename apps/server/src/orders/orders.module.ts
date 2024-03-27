@@ -6,10 +6,12 @@ import { Order } from './entities/order.entity';
 import { BullModule } from '@nestjs/bull';
 
 @Module({
-  imports:[
+  imports: [
     TypeOrmModule.forFeature([Order]),
-    BullModule.registerQueue({
-      name: 'orders',
+    BullModule.registerQueueAsync({
+      useFactory: async () => ({
+        name: 'orders',
+      }),
     }),
   ],
   providers: [OrdersResolver, OrdersService],

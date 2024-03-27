@@ -11,16 +11,16 @@ import { Server, Socket } from 'socket.io';
 export class ChatsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
-  handleConnection(client: any, ...args: any[]) {
+  async handleConnection(client: any, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
   }
 
-  handleDisconnect(client: any) {
+  async handleDisconnect(client: any) {
     console.log(`Client disconnected: ${client.id}`);
   }
 
   @SubscribeMessage('message')
-  handleMessage(client: Socket, payload: { sender: string; message: string }) {
+  async handleMessage(client: Socket, payload: { sender: string; message: string }) {
     console.log(`Message from ${payload.sender}: ${payload.message}`);
     this.server.emit('message', payload);
   }

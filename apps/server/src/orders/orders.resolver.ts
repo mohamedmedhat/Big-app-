@@ -9,27 +9,39 @@ export class OrdersResolver {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Mutation(() => Order)
-  createOrder(@Args('createOrderInput') createOrderInput: CreateOrderInput) {
-    return this.ordersService.create(createOrderInput);
+  async createOrder(
+    @Args('createOrderInput', { type: () => CreateOrderInput })
+    createOrderInput: CreateOrderInput,
+  ) {
+    return await this.ordersService.create(createOrderInput);
   }
 
   @Query(() => [Order], { name: 'orders' })
-  findAll() {
-    return this.ordersService.findAll();
+  async findAll(
+    @Args('page', { type: () => Number }) page: number,
+    @Args('pageSize', { type: () => Number }) pageSize: number,
+  ): Promise<[Order[], number]> {
+    return await this.ordersService.findAll(page, pageSize);
   }
 
   @Query(() => Order, { name: 'order' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.ordersService.findOne(id);
+  async findOne(@Args('id', { type: () => Int }) id: number) {
+    return await this.ordersService.findOne(id);
   }
 
   @Mutation(() => Order)
-  updateOrder(@Args('updateOrderInput') updateOrderInput: UpdateOrderInput) {
-    return this.ordersService.update(updateOrderInput.id, updateOrderInput);
+  async updateOrder(
+    @Args('updateOrderInput', { type: () => UpdateOrderInput })
+    updateOrderInput: UpdateOrderInput,
+  ) {
+    return await this.ordersService.update(
+      updateOrderInput.id,
+      updateOrderInput,
+    );
   }
 
   @Mutation(() => Order)
-  removeOrder(@Args('id', { type: () => Int }) id: number) {
-    return this.ordersService.remove(id);
+  async removeOrder(@Args('id', { type: () => Int }) id: number) {
+    return await this.ordersService.remove(id);
   }
 }

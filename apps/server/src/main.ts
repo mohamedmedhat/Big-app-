@@ -5,9 +5,9 @@ import cookieParser from 'cookie-parser';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { TrpcRouter } from './trpc/trpc.router';
-import { CompressionMiddleware } from './middlewares/compression.middleware';
 import * as compression from 'compression';
 import * as fs from 'fs';
+import { ConfigService } from '@nestjs/config';
 
 const httpsOptions = {
   key: fs.readFileSync('../../../secret/cert.key'),
@@ -18,8 +18,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule,{
     httpsOptions,
   });
-  app.setGlobalPrefix('v1');
+  const _config = new ConfigService();
 
+  app.setGlobalPrefix('v1');
   const trpc = app.get(TrpcRouter); // opt 1
 
   
@@ -28,14 +29,13 @@ async function bootstrap() {
     type: VersioningType.URI,
   });
   app.enableCors({
-    origin: process.env.CLIENT_PORT,
+    origin: _config.getOrThrow<string>('CLIENT_PORT'),
     credentials: true,
   })
   app.use(helmet());
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
-  app.use(compression()); // if this not work use tne one below
-  // app.use(new CompressionMiddleware().use);
+  app.use(compression());
   trpc.applyMiddleware(app); // opt 1 
 
   const config = new DocumentBuilder()
@@ -48,6 +48,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app,config);
   SwaggerModule.setup('api',app,document);
 
-  await app.listen(process.env.NEST_PORT || 4000);
+  await app.listen(_config.getOrThrow<number>('NEST_PORT') || 4000);
 }
 bootstrap();

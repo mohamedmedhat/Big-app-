@@ -1,26 +1,31 @@
-import { InputType, Int, Field } from '@nestjs/graphql';
-import { IsEmail, IsNotEmpty, IsStrongPassword, MaxLength, MinLength } from "class-validator";
+import { InputType, Field } from '@nestjs/graphql';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsStrongPassword,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 @InputType()
 export class CreateUserInput {
-  
   @IsNotEmpty()
-  @Field((type) => String)
+  @Field(() => String)
   name?: string;
 
   @IsEmail()
   @IsNotEmpty()
-  @Field((type) => String)
+  @Field(() => String)
   email: string;
 
   @IsStrongPassword()
   @IsNotEmpty()
   @MinLength(6)
   @MaxLength(20)
-  @Field((type) => String)
+  @Field(() => String)
   password: string;
 
   @IsNotEmpty()
-  @Field()
-  isAdmin: boolean
+  @Field(() => Boolean)
+  isAdmin: boolean;
 }

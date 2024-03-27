@@ -13,38 +13,51 @@ export class ProductsResolver {
   constructor(private readonly productsService: ProductsService) {}
 
   @Mutation(() => Product)
-  @UseInterceptors(FileInterceptor('file',{
-    storage: diskStorage({
-      destination: './upload',
-      filename: (req,file,cb)=>{
-        const randomName = Array(32)
-        .fill(null).map(()=>Math.round(Math.random()*16).toString(16))
-        .join('');
-        return cb(null, `${randomName}${extname(file.originalname)}`)
-      },
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './upload',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          return cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
     }),
-  }))
-  async uploadPhoto(@UploadedFile() file):Promise<Product>{
+  )
+  async uploadPhoto(@UploadedFile() file): Promise<Product> {
     return await this.productsService.savePhoto(file.filename, file.path);
   }
 
-  @Mutation(() => Product, {name:'createProduct'})
-  async AddProducts(@Args('CreateProductInput') CreateProductInput:CreateProductInput){
+  @Mutation(() => Product, { name: 'createProduct' })
+  async AddProducts(
+    @Args('CreateProductInput', { type: () => CreateProductInput })
+    CreateProductInput: CreateProductInput,
+  ) {
     return await this.productsService.CreateProduct(CreateProductInput);
   }
 
-  @Query(() => [Product], {name: 'getallProducts'})
-  async GetAllProducts(){
-    return await this.productsService.GetAllProducts();
+  @Query(() => [Product], { name: 'getallProducts' })
+  async GetAllProducts(
+    @Args('page', { type: () => Number }) page: number,
+    @Args('pageSize', { type: () => Number }) pageSize: number,
+  ): Promise<[Product[], number]> {
+    return await this.productsService.GetAllProducts(page, pageSize);
   }
 
-  @Mutation(() => Product, {name: 'deleteProduct'})
-  async DeleteProduct(name:string){
+  @Mutation(() => Product, { name: 'deleteProduct' })
+  async DeleteProduct(@Args('name', { type: () => String }) name: string) {
     return await this.productsService.DeleteProduct(name);
   }
 
-  @Mutation(() => Product, {name: 'updateProduct'})
-  async UpdateProduct(name:string,@Args('updateProductInput') updateProductInput:UpdateProductInput){
-    return await this.productsService.UpdateProduct(name,updateProductInput);
+  @Mutation(() => Product, { name: 'updateProduct' })
+  async UpdateProduct(
+    @Args('name', { type: () => String }) name: string,
+    @Args('updateProductInput', { type: () => UpdateProductInput })
+    updateProductInput: UpdateProductInput,
+  ) {
+    return await this.productsService.UpdateProduct(name, updateProductInput);
   }
 }

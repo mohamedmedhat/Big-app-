@@ -1,6 +1,7 @@
 import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
 import { Order } from '../../orders/entities/order.entity';
 import { Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { IsDecimal, IsString } from 'class-validator';
 
 @ObjectType()
 export class Product {
@@ -8,18 +9,21 @@ export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
+  @IsString()
+  @Field(() => String)
   @Column()
-  image:string;
+  image: string;
 
-  @Field()
+  @IsString()
+  @Field(() => String)
   @Column()
-  name:string;
+  name: string;
 
-  @Field()
-  @Column()
-  price: number
+  @IsDecimal()
+  @Field(() => Number)
+  @Column('decimal')
+  price: number;
 
-  @OneToMany(()=>Order, order => order.product)
+  @OneToMany(() => Order, (order) => order.product)
   orders: Order[];
 }

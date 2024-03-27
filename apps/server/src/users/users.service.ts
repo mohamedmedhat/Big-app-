@@ -11,20 +11,22 @@ import { CAPTCHA } from './entities/captcha.entity';
 import { Cron } from '@nestjs/schedule';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRpository: Repository<User>,
-    @InjectRepository(CAPTCHA) private readonly userCaptchaa: Repository<CAPTCHA>,
+    @InjectRepository(CAPTCHA)
+    private readonly userCaptchaa: Repository<CAPTCHA>,
     @InjectQueue('users') private readonly _usersQueue: Queue,
     private readonly _logger = new Logger(UsersService.name),
     private jwtService: JwtService,
   ) {}
 
   @Cron('45 * * * * *')
-  async handleCron(){
-     this._logger.debug('This happen on the 45th second')
+  async handleCron() {
+    this._logger.debug('This happen on the 45th second');
   }
 
   async isEmailExist(email: string): Promise<User> {
@@ -48,23 +50,28 @@ export class UsersService {
     return this.jwtService.sign(payload, { expiresIn: '1d' });
   }
 
-  async generateCaptcha(): Promise<{text: string, data: Buffer}>{
+  async generateCaptcha(): Promise<{ text: string; data: Buffer }> {
     const captchaSvg = svgCaptcha.create();
     const text = captchaSvg.text;
-    const data = Buffer.from(captchaSvg.data); // convert svg data to buffer 
+    const data = Buffer.from(captchaSvg.data); // convert svg data to buffer
 
     const captcha = new CAPTCHA();
     captcha.text = text;
     captcha.data = data;
-    await this.userCaptchaa.save(captcha);
+    const captchaError = await validate(captcha);
+    if (captchaError.length > 0) {
+      throw new Error('Validation Failed! ');
+    } else {
+      await this.userCaptchaa.save(captcha);
+    }
 
-    return {text, data};
+    return { text, data };
   }
 
-  async getCaptchaByID(id: number): Promise<CAPTCHA | undefined>{
-    return await this.userCaptchaa.findOneBy({_id: id});
+  async getCaptchaByID(id: number): Promise<CAPTCHA | undefined> {
+    return await this.userCaptchaa.findOneBy({ _id: id });
   }
-  
+
   async SignIn(email: string, password: string): Promise<string> {
     const user = await this.isEmailExist(email);
     const isPasswordValid = bcrypt.compareSync(password, user.password);
@@ -85,7 +92,12 @@ export class UsersService {
       ...createUserInput,
       password: hashPassword,
     });
-    return this.userRpository.save(newUser);
+    const error = await validate(newUser);
+    if (error.length > 0) {
+      throw new Error('Validation Failed! ');
+    } else {
+      return this.userRpository.save(newUser);
+    }
   }
 
   async create(createUserInput: CreateUserInput): Promise<User> {
@@ -93,8 +105,11 @@ export class UsersService {
     return this.userRpository.save(user);
   }
 
-  findAll(): Promise<User[]> {
-    return this.userRpository.find();
+  findAll(page: number = 1, pageSize: number = 20): Promise<[User[], number]> {
+    return this.userRpository.findAndCount({
+      take: pageSize,
+      skip: (page - 1) * pageSize,
+    });
   }
 
   findOne(id: number) {
@@ -107,10 +122,15 @@ export class UsersService {
       return undefined;
     }
     const updatedUser = Object.assign(user, updateUserInput);
-    return this.userRpository.save(updatedUser);
+    const updatedError = await validate(updatedUser);
+    if (updatedError.length > 0) {
+      throw new Error('Validation Failed! ');
+    } else {
+      return this.userRpository.save(updatedUser);
+    }
   }
 
   async remove(id: number) {
-    return this.userRpository.delete(id);
+    return this.userRpository.softDelete(id);
   }
 }
