@@ -8,6 +8,7 @@ import { UserRoles } from '../enums/userRole.enum';
 import { Recaptcha } from '@nestlab/google-recaptcha';
 import { CAPTCHA } from './entities/captcha.entity';
 import { ClassSerializerInterceptor, UseInterceptors } from '@nestjs/common';
+import { UsersPagination } from './entities/userpagination';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -38,7 +39,7 @@ export class UsersResolver {
   @ROLES(UserRoles.USER)
   @Mutation(() => CAPTCHA)
   async validateCaptcha(
-    @Args('captchaId', { type: () => Number }) captchaId: number,
+    @Args('captchaId', { type: () => Int }) captchaId: number,
     @Args('inputText', { type: () => String }) inputText: string,
   ) {
     const captcha = await this.usersService.getCaptchaByID(captchaId);
@@ -77,12 +78,13 @@ export class UsersResolver {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @ROLES(UserRoles.ADMIN)
-  @Query(() => [User], { name: 'findAllUsers' })
+  @Query(() => UsersPagination, { name: 'findAllUsers' })
   async findAll(
     @Args('page', { type: () => Number }) page: number,
     @Args('pageSize', { type: () => Number }) pageSize: number,
-  ): Promise<[User[], number]> {
-    return this.usersService.findAll(page, pageSize);
+  ): Promise<UsersPagination> {
+    const [users, totalusers] = await this.usersService.findAll(page, pageSize);
+    return { users, totalusers };
   }
 
   @UseInterceptors(ClassSerializerInterceptor)

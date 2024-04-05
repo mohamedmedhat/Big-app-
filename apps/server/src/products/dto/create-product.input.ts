@@ -1,4 +1,4 @@
-import { Field, InputType} from '@nestjs/graphql';
+import { Field, Float, InputType} from '@nestjs/graphql';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 @InputType()
@@ -14,6 +14,6 @@ export class CreateProductInput {
 
   @IsNotEmpty()
   @IsNumber()
-  @Field(() => Number)
+  @Field(() => Float)
   price:number;
 }

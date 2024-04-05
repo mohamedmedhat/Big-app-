@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
 import { Order } from '../../orders/entities/order.entity';
 import { Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { IsDecimal, IsString } from 'class-validator';
@@ -20,7 +20,7 @@ export class Product {
   name: string;
 
   @IsDecimal()
-  @Field(() => Number)
+  @Field(() => Float)
   @Column('decimal')
   price: number;
 

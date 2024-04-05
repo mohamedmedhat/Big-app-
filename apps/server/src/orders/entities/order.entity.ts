@@ -12,7 +12,7 @@ export class Order {
 
   @IsNumber()
   @IsNotEmpty()
-  @Field()
+  @Field(() => Int)
   @Column()
   qauntity:number;
 

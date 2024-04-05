@@ -7,6 +7,7 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
+import { ProductsPagination } from './entities/productspagination';
 
 @Resolver(() => Product)
 export class ProductsResolver {
@@ -39,12 +40,16 @@ export class ProductsResolver {
     return await this.productsService.CreateProduct(CreateProductInput);
   }
 
-  @Query(() => [Product], { name: 'getallProducts' })
+  @Query(() => ProductsPagination, { name: 'getallProducts' })
   async GetAllProducts(
-    @Args('page', { type: () => Number }) page: number,
-    @Args('pageSize', { type: () => Number }) pageSize: number,
-  ): Promise<[Product[], number]> {
-    return await this.productsService.GetAllProducts(page, pageSize);
+    @Args('page', { type: () => Int }) page: number,
+    @Args('pageSize', { type: () => Int }) pageSize: number,
+  ): Promise<ProductsPagination> {
+    const [products, totalproducts] = await this.productsService.GetAllProducts(
+      page,
+      pageSize,
+    );
+    return { products, totalproducts };
   }
 
   @Mutation(() => Product, { name: 'deleteProduct' })
