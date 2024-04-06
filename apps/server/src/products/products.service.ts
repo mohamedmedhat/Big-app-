@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
@@ -47,6 +47,25 @@ export class ProductsService {
     });
   }
 
+  async GetTopProducts(
+    page: number = 1,
+    pageSize: number = 30,
+  ): Promise<[Product[], number]> {
+    const [products, totalproducts] = await this.productRepository.findAndCount(
+      {
+        where: {
+          price: MoreThan(0),
+        },
+        order: {
+          price: 'DESC',
+        },
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+      },
+    );
+    return [products, totalproducts];
+  }
+
   async UpdateProduct(
     name: string,
     updateProduct: UpdateProductInput,
@@ -66,7 +85,12 @@ export class ProductsService {
     }
   }
 
-  async DeleteProduct(name: string) {
-    return await this.productRepository.softDelete(name);
+  async DeleteProduct(name: string): Promise<Product> {
+    const getProductByName = await this.productRepository.findOneOrFail({
+      where: {
+        name: name,
+      },
+    });
+    return await this.productRepository.softRemove(getProductByName);
   }
 }

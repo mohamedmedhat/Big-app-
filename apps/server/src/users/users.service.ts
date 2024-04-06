@@ -112,8 +112,8 @@ export class UsersService {
     });
   }
 
-  findOne(id: number) {
-    return this.userRpository.findOneBy({ id });
+  findOne(id: number): Promise<User> {
+    return this.userRpository.findOneByOrFail({ id });
   }
 
   async update(id: number, updateUserInput: UpdateUserInput): Promise<User> {

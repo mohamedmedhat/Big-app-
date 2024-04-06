@@ -20,8 +20,8 @@ export class Product {
   name: string;
 
   @IsDecimal()
-  @Field(() => Float)
-  @Column('decimal')
+  @Field(() => Float, { defaultValue: 0 })
+  @Column('decimal', { default: 0 })
   price: number;
 
   @OneToMany(() => Order, (order) => order.product)
